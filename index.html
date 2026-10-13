@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2f4f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1319" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Entreno">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Entreno Arqueo y Regleta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+/* Layout: single scroll column, sticky day-chips at top, live timer docked at the bottom. */
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --surface-2:#e9edf2;
+  --fg:#141d26; --muted:#5a6b7c; --line:#d8dfe7;
+  --accent:#1f5fd6; --accent-ink:#ffffff; --accent-soft:#e4ecfb;
+  --warn:#9d6410; --warn-soft:#faf0dd;
+  --crit:#a8322a;
+  --display:"Saira Condensed",'Arial Narrow',sans-serif;
+  --body:"Source Sans 3",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1319; --surface:#161e27; --surface-2:#1e2831;
+  --fg:#e4ebf2; --muted:#8c9bab; --line:#26323d;
+  --accent:#5f95ff; --accent-ink:#06101f; --accent-soft:#17263f;
+  --warn:#d6962f; --warn-soft:#2b2317;
+  --crit:#e2695e;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1319; --surface:#161e27; --surface-2:#1e2831;
+  --fg:#e4ebf2; --muted:#8c9bab; --line:#26323d;
+  --accent:#5f95ff; --accent-ink:#06101f; --accent-soft:#17263f;
+  --warn:#d6962f; --warn-soft:#2b2317;
+  --crit:#e2695e;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1;letter-spacing:.01em;text-transform:uppercase;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:15px;margin:6px 0 0}
+
+/* calculadora */
+.calc{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.calc-row{display:flex;gap:12px;flex-wrap:wrap}
+.field{flex:1 1 120px;min-width:0}
+.field label{display:block;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;min-width:0;font-family:var(--mono);font-size:20px;font-weight:600;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);color:var(--fg)}
+.derived{margin-top:10px;font-size:13px;color:var(--muted);font-family:var(--mono)}
+.derived b{color:var(--fg)}
+.rule{margin-top:10px;font-size:13.5px;color:var(--muted);background:var(--surface-2);padding:9px 11px;border-radius:7px}
+.rule b{color:var(--fg)}
+.pending{margin-top:10px;font-size:13px;background:var(--warn-soft);border-left:3px solid var(--warn);padding:8px 10px;border-radius:0 6px 6px 0}
+
+/* chips */
+.chips{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:10px;margin-top:18px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:14px;font-weight:600;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.chip[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* bloques */
+.day-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:14px 0 4px}
+.day-head h2{font-family:var(--display);text-transform:uppercase;font-size:24px;font-weight:700;margin:0;letter-spacing:.02em}
+.dur{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.goal{color:var(--muted);font-size:15px;margin:0 0 14px}
+
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:10px}
+.ex-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ex h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;font-size:17px;font-weight:600;margin:0}
+.step{font-family:var(--mono);font-size:12px;color:var(--muted);flex:0 0 auto}
+.specs{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.spec{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border-radius:5px;padding:3px 8px;font-variant-numeric:tabular-nums}
+.spec.load{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.note{font-size:14.5px;color:var(--muted);margin:9px 0 0}
+.note+.note{margin-top:5px}
+.crit{color:var(--crit);font-weight:600}
+
+ul.tight{margin:9px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted)}
+ul.tight li{margin-bottom:3px}
+ul.tight b{color:var(--fg);font-weight:600}
+
+button.go{margin-top:11px;width:100%;font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;font-size:14px;font-weight:600;padding:10px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.go.ghost{background:transparent;color:var(--accent)}
+button.go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.quick{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.quick button{font-family:var(--mono);font-size:13px;padding:7px 11px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);cursor:pointer}
+
+.rules{background:var(--surface-2);border-radius:10px;padding:14px;margin-top:18px}
+.rules h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:14px;margin:0 0 8px;color:var(--muted)}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+.tscroll{overflow-x:auto}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);text-transform:uppercase;font-size:12px;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* timer a pantalla completa */
+.overlay{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 18px calc(18px + env(safe-area-inset-bottom,0px))}
+.ov-name{font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;font-size:14px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ov-phase{font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:clamp(20px,6vw,30px);margin-top:6px}
+.ov-phase.work{color:var(--accent)}
+.ov-phase.rest{color:var(--warn)}
+.ov-clock{font-family:var(--mono);font-weight:600;font-size:clamp(76px,27vw,190px);line-height:.92;font-variant-numeric:tabular-nums;margin:6px 0 2px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.ov-clock.work{color:var(--accent)}
+.ov-clock.rest{color:var(--warn)}
+.ov-clock.paused{opacity:.4}
+.bar{width:min(420px,100%);height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:currentColor;width:0;color:var(--accent)}
+.bar.rest i{color:var(--warn)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s linear}}
+.dots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px;max-width:min(420px,100%)}
+.dot{width:42px;height:42px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-family:var(--mono);font-size:15px;font-weight:600;cursor:pointer;padding:0}
+.dot.done{background:var(--surface-2);color:var(--muted);opacity:.65}
+.dot.now{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dot:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ov-hint{font-size:13px;color:var(--muted);margin-top:10px}
+.ov-btns{display:flex;gap:9px;margin-top:26px;flex-wrap:wrap;justify-content:center}
+.ov-btns button{font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:14px;font-weight:600;padding:12px 16px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;min-width:52px}
+.ov-btns button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);min-width:110px}
+.ov-btns button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Entreno arqueo y regleta</h1>
+  <p class="sub">Dos sesiones de escalada, una libre y dos de gimnasio. Las cargas se calculan solas desde el pico de fuerza.</p>
+
+  <div class="calc">
+    <div class="calc-row">
+      <div class="field">
+        <label for="peak">Pico · 20 mm</label>
+        <input id="peak" type="number" inputmode="decimal" value="60" min="10" max="150" step="0.5">
+      </div>
+      <div class="field">
+        <label for="mean">Media meseta</label>
+        <input id="mean" type="number" inputmode="decimal" value="53" min="10" max="150" step="0.5">
+      </div>
+      <div class="field">
+        <label for="bw">Peso corporal</label>
+        <input id="bw" type="number" inputmode="decimal" value="68" min="30" max="150" step="0.5">
+      </div>
+    </div>
+    <p class="derived">Fuerza/peso <b id="ratio">88 %</b> · media/pico <b id="mp">88 %</b> · una mano, tracción de pie, brazo en extensión</p>
+    <p class="rule"><b>Cada referencia va con su duración.</b> Series de 7-8 s se calculan desde la <b>media</b>, que es lo que puedes sostener. Series de 5 s, desde el <b>pico</b>, que es un instante. Medir: rampa de 2 s, máximo 7 s, y apuntas el pico y la media de los 5 segundos centrales — sin la rampa ni la caída final.</p>
+    <p class="pending">Valores provisionales hasta que midas. Mide las dos manos por separado y marca el anclaje con cinta: si el montaje cambia, los porcentajes dejan de valer. Si una mano queda más de un 10 % por debajo, se trata antes de subir cargas. Si la media sale muy por debajo del 85 % del pico, probablemente subiste la fuerza demasiado despacio.</p>
+  </div>
+
+  <div class="chips" role="tablist">
+    <button class="chip" role="tab" data-tab="a" aria-selected="true">Día A</button>
+    <button class="chip" role="tab" data-tab="b" aria-selected="false">Día B</button>
+    <button class="chip" role="tab" data-tab="c" aria-selected="false">Día C</button>
+    <button class="chip" role="tab" data-tab="g1" aria-selected="false">Gym 1</button>
+    <button class="chip" role="tab" data-tab="g2" aria-selected="false">Gym 2</button>
+    <button class="chip" role="tab" data-tab="d" aria-selected="false">Diario</button>
+    <button class="chip" role="tab" data-tab="w" aria-selected="false">Semana</button>
+  </div>
+
+  <!-- DÍA A -->
+  <section id="tab-a">
+    <div class="day-head"><h2>Día A · Fuerza y regleta</h2><span class="dur">1 h 40</span></div>
+    <p class="goal">Día nervioso: máxima tensión, máxima calidad, poco volumen. Lo duro agrupado con lo duro.</p>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Calentamiento</h3><span class="step">1</span></div>
+      <div class="specs"><span class="spec">15 min</span><span class="spec">progresivo hasta 70 %</span></div>
+      <p class="note">Nada de regleta pequeña ni arqueo hasta estar caliente del todo.</p>
+      <button class="go ghost" data-timer='{"name":"Calentamiento","reps":1,"work":0,"rest":900}'>Temporizar 15 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Fuerza máxima</h3><span class="step">2</span></div>
+      <div class="specs">
+        <span class="spec">20 mm</span><span class="spec">half crimp</span>
+        <span class="spec">5 × 7-8 s</span>
+        <span class="spec load" data-ref="mean" data-lo=".85" data-hi=".90"></span>
+        <span class="spec">3 min</span>
+      </div>
+      <p class="note">Desde la <b>media</b>, porque las series son de 7-8 s. El objetivo no se mueve dentro de la sesión: lo alcanzas en las cinco series o la sesión se acabó. Lo que buscas en la gráfica es una línea plana en tu número, no un picacho seguido de caída.</p>
+      <p class="note">Si vienes tocado, haz una tracción máxima de 5 s al final del calentamiento y saca el 85-90 % del número de hoy. La fuerza de dedos oscila un 5-10 % según cómo vengas.</p>
+      <button class="go" data-timer='{"name":"Fuerza máxima","reps":5,"work":8,"rest":180}'>Iniciar 5 × 8 s / 3 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Arqueo</h3><span class="step">3</span></div>
+      <div class="specs">
+        <span class="spec">20 mm</span><span class="spec">full crimp</span>
+        <span class="spec">4 × 5 s</span>
+        <span class="spec load" data-ref="peak" data-lo=".50" data-hi=".60"></span>
+        <span class="spec">2 min</span>
+      </div>
+      <p class="note">Desde el <b>pico</b>, porque las series son de 5 s. No busca fuerza: busca posición y lumbricales. <b>Míralo, no lo sientas</b> — todos los PIP cerca de 90°, meñique incluido. Por dentro un semiabierto se parece demasiado a un arqueo.</p>
+      <p class="note crit">Molestia en la base del dedo o en la falange media → se para la progresión del arqueo cuatro semanas.</p>
+      <button class="go" data-timer='{"name":"Arqueo","reps":4,"work":5,"rest":120}'>Iniciar 4 × 5 s / 2 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Transición</h3><span class="step">4</span></div>
+      <div class="specs"><span class="spec">5 min</span><span class="spec">comer, hidratar</span></div>
+      <button class="go ghost" data-timer='{"name":"Transición","reps":1,"work":0,"rest":300}'>Temporizar 5 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Bloque límite</h3><span class="step">5</span></div>
+      <div class="specs">
+        <span class="spec">3 bloques</span><span class="spec">regleta</span>
+        <span class="spec">desplome moderado</span><span class="spec">techo 15 intentos</span>
+      </div>
+      <ul class="tight">
+        <li><b>Selección, antes de empezar:</b> 1 bloque encadenable en 3-6 intentos, 2 que hoy no vas a hacer.</li>
+        <li><b>Intentos:</b> 4-5 por bloque, nunca más de 6.</li>
+        <li><b>Descansos:</b> 3-4 min entre intentos del mismo bloque, 5 min al cambiar de bloque.</li>
+        <li><b>Abandono:</b> dos intentos seguidos peores que tu mejor del día → ese bloque se cierra.</li>
+        <li><b>Registro:</b> tras cada bloque anota por qué falló — dedos, pies, lectura o cadera. En seis sesiones verás el patrón.</li>
+      </ul>
+      <button class="go" data-timer='{"name":"Bloque límite · 5 intentos","reps":5,"work":0,"rest":240}'>Iniciar bloque · 5 intentos / 4 min</button>
+      <div class="quick">
+        <button data-timer='{"name":"Entre intentos","reps":1,"work":0,"rest":180}'>3 min</button>
+        <button data-timer='{"name":"Entre intentos","reps":1,"work":0,"rest":240}'>4 min</button>
+        <button data-timer='{"name":"Entre bloques","reps":1,"work":0,"rest":300}'>5 min</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DÍA B -->
+  <section id="tab-b" hidden>
+    <div class="day-head"><h2>Día B · Estructural y volumen</h2><span class="dur">1 h 40</span></div>
+    <p class="goal">Día de carga media sin picos. Tiempo bajo tensión en la tabla, automatismo en el muro.</p>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Calentamiento</h3><span class="step">1</span></div>
+      <div class="specs"><span class="spec">15 min</span><span class="spec">progresivo</span></div>
+      <button class="go ghost" data-timer='{"name":"Calentamiento","reps":1,"work":0,"rest":900}'>Temporizar 15 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Suspensiones largas</h3><span class="step">2</span></div>
+      <div class="specs">
+        <span class="spec">20-25 mm</span><span class="spec">half crimp</span>
+        <span class="spec">4 × hasta 30 s</span>
+        <span class="spec load" data-ref="mean" data-lo=".75" data-hi=".75"></span>
+        <span class="spec">3 min</span>
+      </div>
+      <p class="note">Desde la <b>media</b>, y aquí la cifra es más tolerante: el objetivo del día es tiempo bajo tensión, no clavar un número. Canto grande a propósito: carga el tejido sin concentrar tensión en las poleas. Cuando las 4 lleguen a 30 s cómodas, <b>baja el canto</b>, no subas carga.</p>
+      <button class="go" data-timer='{"name":"Suspensiones largas","reps":4,"work":30,"rest":180}'>Iniciar 4 × 30 s / 3 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Repeticiones perfectas</h3><span class="step">3</span></div>
+      <div class="specs"><span class="spec">30 min</span><span class="spec">8 bloques × 2</span><span class="spec">3-4 grados por debajo</span><span class="spec">60-90 s</span></div>
+      <p class="note"><b>Criterio doble.</b> El ascenso solo cuenta si no recolocas ningún pie y si agarras todo en arqueo. Si recolocas, repites y sale de la cuota.</p>
+      <p class="note">Aquí no te juegas nada, y por eso es donde se graba el patrón. Vale más que cualquier serie de tabla.</p>
+      <button class="go" data-timer='{"name":"Repeticiones perfectas","reps":16,"work":0,"rest":90}'>Iniciar 16 ascensos / 90 s</button>
+      <div class="quick">
+        <button data-timer='{"name":"Entre ascensos","reps":1,"work":0,"rest":60}'>60 s</button>
+        <button data-timer='{"name":"Entre ascensos","reps":1,"work":0,"rest":90}'>90 s</button>
+        <button data-timer='{"name":"Entre ascensos","reps":1,"work":0,"rest":120}'>2 min</button>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Drills</h3><span class="step">4</span></div>
+      <div class="specs"><span class="spec">15 min</span><span class="spec">2 drills × 3 ascensos</span><span class="spec">60 s</span></div>
+      <ul class="tight">
+        <li><b>Pies silenciosos:</b> cero ruido al apoyar.</li>
+        <li><b>Mirada fija:</b> no levantas la vista del pie hasta que carga.</li>
+        <li><b>Un pie:</b> subir un bloque fácil cambiando solo un pie por movimiento.</li>
+      </ul>
+      <p class="note">Elige dos por sesión, no más.</p>
+      <button class="go" data-timer='{"name":"Drills · 6 ascensos","reps":6,"work":0,"rest":60}'>Iniciar 6 ascensos / 60 s</button>
+      <div class="quick">
+        <button data-timer='{"name":"Entre ascensos","reps":1,"work":0,"rest":60}'>60 s</button>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Bloques feos</h3><span class="step">5</span></div>
+      <div class="specs"><span class="spec">22 min</span><span class="spec">3 × 3 intentos</span><span class="spec">2 min</span><span class="spec">intensidad media</span></div>
+      <p class="note">Regletas que obliguen a arquear para traccionar, en desplome moderado. No para encadenar: para exponerte al agarre que te falta.</p>
+      <p class="note">Si vas justo de tiempo, este bloque es el que cae. Nunca el 3.</p>
+      <button class="go" data-timer='{"name":"Bloques feos · 9 intentos","reps":9,"work":0,"rest":120}'>Iniciar 9 intentos / 2 min</button>
+      <div class="quick">
+        <button data-timer='{"name":"Entre intentos","reps":1,"work":0,"rest":120}'>2 min</button>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Extensores y lumbricales</h3><span class="step">6</span></div>
+      <div class="specs"><span class="spec">10 min</span><span class="spec">no cuenta como dedos</span></div>
+      <ul class="tight">
+        <li>Extensores de dedos y muñeca con goma.</li>
+        <li><b>Lumbricales:</b> colocas los dedos en arqueo pleno con la otra mano y traccionas suave sobre un canto. Sin carga real, 3 min.</li>
+      </ul>
+      <button class="go" data-timer='{"name":"Extensores","reps":3,"work":0,"rest":45}'>Extensores · 3 series / 45 s</button>
+      <button class="go ghost" data-timer='{"name":"Lumbricales","reps":1,"work":0,"rest":180}'>Lumbricales · 3 min</button>
+    </div>
+  </section>
+
+  <!-- DÍA C -->
+  <section id="tab-c" hidden>
+    <div class="day-head"><h2>Día C · Tu terreno</h2><span class="dur">libre</span></div>
+    <p class="goal">Desplome y pockets. Sin estructura, sin cuota, sin tabla.</p>
+    <div class="ex">
+      <div class="ex-top"><h3>Cómo se usa</h3></div>
+      <ul class="tight">
+        <li>Para no perder lo que ya tienes, y porque es donde disfrutas.</li>
+        <li>Si sale roca el fin de semana, <b>sustituye</b> a este día. No se suma.</li>
+        <li>Si acabas con los dedos tocados, has escalado demasiado para la semana que viene.</li>
+        <li>Si quieres meter algún circuito corto de resistencia, el sitio es el final de este día, donde no interfiere con nada.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- GYM 1 -->
+  <section id="tab-g1" hidden>
+    <div class="day-head"><h2>Gym 1 · Tirón y hombro</h2><span class="dur">40 min</span></div>
+    <p class="goal">Lo pesado primero, los antagonistas después. Nunca el mismo día que la tabla.</p>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Calentamiento de hombro</h3><span class="step">1</span></div>
+      <div class="specs"><span class="spec">10 min</span><span class="spec">obligatorio</span></div>
+      <p class="note">CARs de hombro, rotaciones con goma, suspensión pasiva 3 × 20 s.</p>
+      <button class="go ghost" data-timer='{"name":"Calentamiento hombro","reps":1,"work":0,"rest":600}'>Temporizar 10 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Dominadas lastradas</h3><span class="step">2</span></div>
+      <div class="specs"><span class="spec">4 × 5</span><span class="spec">3 min</span></div>
+      <p class="note">No entran hasta la tercera semana si llevas tiempo sin hacerlas.</p>
+      <button class="go" data-timer='{"name":"Dominadas lastradas","reps":4,"work":0,"rest":180}'>Serie + 3 min × 4</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Dominada en anillas con rotación</h3><span class="step">3</span></div>
+      <div class="specs"><span class="spec">3 × 6</span><span class="spec">2 min</span></div>
+      <p class="note">Empiezas en pronación y acabas en supinación. Hombro en rango, con carga.</p>
+      <button class="go" data-timer='{"name":"Dominada con rotación","reps":3,"work":0,"rest":120}'>Serie + 2 min × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Remo con barra o anillas</h3><span class="step">4</span></div>
+      <div class="specs"><span class="spec">3 × 8</span><span class="spec">2 min</span></div>
+      <button class="go ghost" data-timer='{"name":"Remo","reps":3,"work":0,"rest":120}'>Serie + 2 min × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Face pull</h3><span class="step">5</span></div>
+      <div class="specs"><span class="spec">3 × 15</span><span class="spec">90 s</span></div>
+      <button class="go ghost" data-timer='{"name":"Face pull","reps":3,"work":0,"rest":90}'>Serie + 90 s × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Rotación externa con goma</h3><span class="step">6</span></div>
+      <div class="specs"><span class="spec">3 × 15 / lado</span><span class="spec">60 s</span></div>
+      <button class="go ghost" data-timer='{"name":"Rotación externa","reps":3,"work":0,"rest":60}'>Serie + 60 s × 3</button>
+    </div>
+  </section>
+
+  <!-- GYM 2 -->
+  <section id="tab-g2" hidden>
+    <div class="day-head"><h2>Gym 2 · Empuje y rango</h2><span class="dur">40 min</span></div>
+    <p class="goal">Fuerza dentro del rango que te falta. El rango que no controlas no lo usas escalando.</p>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Calentamiento de hombro</h3><span class="step">1</span></div>
+      <div class="specs"><span class="spec">10 min</span><span class="spec">obligatorio</span></div>
+      <button class="go ghost" data-timer='{"name":"Calentamiento hombro","reps":1,"work":0,"rest":600}'>Temporizar 10 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Press de hombro sentado</h3><span class="step">2</span></div>
+      <div class="specs"><span class="spec">4 × 6</span><span class="spec">3 min</span></div>
+      <p class="note">Sustituye al press banca: carga en posición alta, que es donde te falta.</p>
+      <button class="go" data-timer='{"name":"Press de hombro","reps":4,"work":0,"rest":180}'>Serie + 3 min × 4</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Fondos en anillas</h3><span class="step">3</span></div>
+      <div class="specs"><span class="spec">3 × 6</span><span class="spec">2 min</span></div>
+      <p class="note">En anillas y no en paralelas fijas: el hombro elige su rotación en vez de forzarla. Si molestan, fuera y los cambias por press inclinado.</p>
+      <button class="go" data-timer='{"name":"Fondos en anillas","reps":3,"work":0,"rest":120}'>Serie + 2 min × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Dislocaciones</h3><span class="step">4</span></div>
+      <div class="specs"><span class="spec">3 × 10</span><span class="spec">60 s</span><span class="spec">palo o goma</span></div>
+      <p class="note">Manos muy separadas, codos rectos todo el recorrido, de delante a detrás por encima de la cabeza. Si necesitas doblar los codos, abre más las manos. Vas cerrando el agarre con las semanas.</p>
+      <button class="go ghost" data-timer='{"name":"Dislocaciones","reps":3,"work":0,"rest":60}'>Serie + 60 s × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Elevación en Y</h3><span class="step">5</span></div>
+      <div class="specs"><span class="spec">3 × 12</span><span class="spec">1-3 kg</span><span class="spec">60 s</span></div>
+      <p class="note">Tumbado boca abajo. Fuerza en flexión máxima: tu agujero exacto. Si compensas arqueando la espalda, pesa demasiado.</p>
+      <button class="go ghost" data-timer='{"name":"Elevación en Y","reps":3,"work":0,"rest":60}'>Serie + 60 s × 3</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Compresión isométrica</h3><span class="step">6</span></div>
+      <div class="specs"><span class="spec">4 × 20 s</span><span class="spec">90 s</span></div>
+      <button class="go" data-timer='{"name":"Compresión","reps":4,"work":20,"rest":90}'>Iniciar 4 × 20 s / 90 s</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Pallof press</h3><span class="step">7</span></div>
+      <div class="specs"><span class="spec">3 × 12 / lado</span><span class="spec">60 s</span></div>
+      <p class="note">Antirrotación. En tu terreno transfiere, los abdominales clásicos no.</p>
+      <button class="go ghost" data-timer='{"name":"Pallof","reps":3,"work":0,"rest":60}'>Serie + 60 s × 3</button>
+    </div>
+  </section>
+
+  <!-- DIARIO -->
+  <section id="tab-d" hidden>
+    <div class="day-head"><h2>Diario</h2><span class="dur">15 min</span></div>
+    <p class="goal">No cuenta como sesión. Si te llega a la sesión del día, vas demasiado fuerte.</p>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Abrahangs</h3></div>
+      <div class="specs"><span class="spec">18-22 mm</span><span class="spec">pies en el suelo</span><span class="spec">10 s / 50 s × 10</span><span class="spec">30-40 %</span></div>
+      <p class="note">Nunca colgado. Intensidad ridícula: tensión ligera en el antebrazo. Por la mañana, separado al menos 6 h de la sesión. <b>No se progresa</b>, es dosis fija.</p>
+      <button class="go" data-timer='{"name":"Abrahangs","reps":10,"work":10,"rest":50}'>Iniciar 10 min</button>
+    </div>
+
+    <div class="ex">
+      <div class="ex-top"><h3>Movilidad de hombro</h3></div>
+      <div class="specs"><span class="spec">5 min</span><span class="spec">a diario</span></div>
+      <ul class="tight">
+        <li><b>Dislocaciones</b> 3 × 10, lentas, sin forzar el final.</li>
+        <li><b>Suspensión pasiva</b> 3 × 20-30 s: hombros relajados y subidos hacia las orejas, sin activar. Barra cómoda, no regleta.</li>
+      </ul>
+      <p class="note">El rango cargado tarda meses, no semanas. Es lo más lento del plan y por eso lo que menos conviene interrumpir.</p>
+      <button class="go ghost" data-timer='{"name":"Suspensión pasiva","reps":3,"work":25,"rest":60}'>Suspensión pasiva 3 × 25 s</button>
+    </div>
+  </section>
+
+  <!-- SEMANA -->
+  <section id="tab-w" hidden>
+    <div class="day-head"><h2>Semana y reglas</h2></div>
+    <div class="tscroll">
+      <table>
+        <tr><th>Día</th><th>Sesión</th></tr>
+        <tr><td>Lun</td><td>Día A · fuerza y regleta</td></tr>
+        <tr><td>Mar</td><td>Gym 1 · tirón y hombro</td></tr>
+        <tr><td>Mié</td><td>Día B · estructural y volumen</td></tr>
+        <tr><td>Jue</td><td>Gym 2 · empuje y rango</td></tr>
+        <tr><td>Vie</td><td>Día C · tu terreno (opcional)</td></tr>
+        <tr><td>Sáb-Dom</td><td>Descanso, o roca en lugar del Día C</td></tr>
+      </table>
+    </div>
+
+    <div class="rules">
+      <h3>Reglas que no se negocian</h3>
+      <ul class="tight">
+        <li><b>Dedos antes de escalar</b>, nunca después. Con los flexores fatigados no alcanzas la carga que convierte el ejercicio en estímulo.</li>
+        <li><b>Presupuesto semanal:</b> 15 intentos duros el Día A + 9 el Día B = 24. Si un día te pasas, el otro baja. No se compensa al alza.</li>
+        <li><b>Un solo ejercicio de dedos por sesión.</b> Todo comparte la misma estructura limitante; añadir un segundo reparte el mismo presupuesto en dos sitios.</li>
+        <li><b>Nunca subir carga y volumen</b> la misma semana.</li>
+        <li><b>El gimnasio no va el mismo día que la tabla.</b></li>
+      </ul>
+    </div>
+
+    <div class="rules">
+      <h3>Cuándo subir</h3>
+      <div class="tscroll">
+        <table>
+          <tr><th>Trabajo</th><th>Criterio</th><th>Cuánto</th></tr>
+          <tr><td>Fuerza máx.</td><td>5 series con margen y sin molestias, 2 sesiones seguidas</td><td>+2-3 %</td></tr>
+          <tr><td>Arqueo</td><td>4 semanas sin molestias en la fase actual</td><td>siguiente fase</td></tr>
+          <tr><td>Suspensiones</td><td>4 × 30 s cómodos</td><td>bajar canto</td></tr>
+          <tr><td>Abrahangs</td><td>—</td><td>nunca</td></tr>
+          <tr><td>Gimnasio</td><td>series limpias 2 semanas seguidas</td><td>+ peso</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="rules">
+      <h3>Retest · cada 4 semanas</h3>
+      <p class="note">Mismo día de la semana, misma hora, 48 h de descanso previo, mismo calentamiento, mismo montaje marcado con cinta. En cada medición apuntas <b>pico y media de la meseta</b>, que es lo que alimenta las cargas.</p>
+      <ul class="tight">
+        <li>20 mm half crimp, <b>las dos manos por separado</b>.</li>
+        <li>15 mm half crimp. No vale aplicar porcentajes del de 20: en canto pequeño cambia el reparto entre dedos.</li>
+        <li>20 mm en arqueo, solo cuando lleves semanas de carga submáxima ahí. Antes de eso, medir el máximo en una posición que no has entrenado tiene más riesgo que beneficio.</li>
+        <li>Tiempo máximo de suspensión en 20 mm al 75 % de la media.</li>
+      </ul>
+      <p class="note">Después recalculas todo: no se progresa por calendario, se progresa por medición.</p>
+    </div>
+
+    <div class="rules">
+      <h3>Parar y revisar si aparece</h3>
+      <ul class="tight">
+        <li>Molestia en la base del dedo o la falange media que dura más de 48 h.</li>
+        <li>Rigidez matinal en los dedos más de 3 días seguidos.</li>
+        <li>El pico cae más de un 5 % en dos retests seguidos.</li>
+        <li>Necesitas más de 72 h para recuperarte del Día A.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="ov" hidden role="dialog" aria-label="Temporizador">
+  <div class="ov-name" id="ovName">—</div>
+  <div class="ov-phase" id="ovPhase">—</div>
+  <div class="ov-clock" id="ovClock" title="Toca para pausar">0:00</div>
+  <div class="bar" id="ovBarWrap"><i id="ovBar"></i></div>
+  <div class="dots" id="ovDots"></div>
+  <p class="ov-hint" id="ovHint">Toca un número para saltar ahí</p>
+  <div class="ov-btns">
+    <button id="ovPrev" aria-label="Fase anterior">◀</button>
+    <button id="ovToggle" class="primary">Pausa</button>
+    <button id="ovNext" aria-label="Fase siguiente">▶</button>
+    <button id="ovStop">Fin</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var store = {
+    get:function(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:v; }catch(e){ return d; } },
+    set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  };
+
+  /* ---- cargas ---- */
+  var peakEl=document.getElementById('peak'), meanEl=document.getElementById('mean'),
+      bwEl=document.getElementById('bw'), ratioEl=document.getElementById('ratio'),
+      mpEl=document.getElementById('mp');
+  peakEl.value = store.get('peak','60');
+  meanEl.value = store.get('mean','53');
+  bwEl.value   = store.get('bw','68');
+
+  function round(n){ return (Math.round(n*2)/2).toFixed(1).replace(/\.0$/,''); }
+  function recalc(){
+    var p=parseFloat(peakEl.value)||0, m=parseFloat(meanEl.value)||0, w=parseFloat(bwEl.value)||0;
+    document.querySelectorAll('.spec.load').forEach(function(el){
+      var ref=el.getAttribute('data-ref')||'mean';
+      var base=(ref==='peak')?p:m;
+      var lo=parseFloat(el.getAttribute('data-lo')), hi=parseFloat(el.getAttribute('data-hi'));
+      var a=round(base*lo), b=round(base*hi);
+      var pct=(lo===hi?Math.round(lo*100):Math.round(lo*100)+'-'+Math.round(hi*100))+' % '+(ref==='peak'?'pico':'media');
+      el.textContent=(a===b?a:a+'-'+b)+' kg · '+pct;
+    });
+    ratioEl.textContent = (w>0&&p>0) ? Math.round(p/w*100)+' %' : '—';
+    mpEl.textContent    = (p>0&&m>0) ? Math.round(m/p*100)+' %' : '—';
+    store.set('peak',peakEl.value); store.set('mean',meanEl.value); store.set('bw',bwEl.value);
+  }
+  [peakEl,meanEl,bwEl].forEach(function(el){ el.addEventListener('input',recalc); });
+  recalc();
+
+  /* ---- pestañas ---- */
+  var chips=[].slice.call(document.querySelectorAll('.chip'));
+  function show(id){
+    chips.forEach(function(c){
+      var on = c.dataset.tab===id;
+      c.setAttribute('aria-selected', on?'true':'false');
+      document.getElementById('tab-'+c.dataset.tab).hidden = !on;
+    });
+    store.set('tab',id);
+  }
+  chips.forEach(function(c){ c.addEventListener('click',function(){ show(c.dataset.tab); window.scrollTo({top:0,behavior:'smooth'}); }); });
+  var saved=store.get('tab','a');
+  show(chips.some(function(c){return c.dataset.tab===saved;}) ? saved : 'a');
+
+  /* ---- sonido ---- */
+  var ctx=null;
+  function beep(freq,dur){
+    try{
+      if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; ctx=new AC(); }
+      if(ctx.state==='suspended') ctx.resume();
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.frequency.value=freq; o.type='sine'; o.connect(g); g.connect(ctx.destination);
+      var t=ctx.currentTime;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.25,t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.start(t); o.stop(t+dur+0.02);
+    }catch(e){}
+  }
+
+  /* ---- wake lock ---- */
+  var lock=null;
+  function hold(){ try{ if(navigator.wakeLock&&!lock) navigator.wakeLock.request('screen').then(function(l){lock=l;l.addEventListener('release',function(){lock=null;});},function(){}); }catch(e){} }
+  function release(){ try{ if(lock){ lock.release(); lock=null; } }catch(e){} }
+
+  /* ---- motor del temporizador ---- */
+  var ov=document.getElementById('ov'), nameEl=document.getElementById('ovName'),
+      phaseEl=document.getElementById('ovPhase'), clockEl=document.getElementById('ovClock'),
+      fillEl=document.getElementById('ovBar'), barWrap=document.getElementById('ovBarWrap'),
+      dotsEl=document.getElementById('ovDots'), hintEl=document.getElementById('ovHint'),
+      toggleBtn=document.getElementById('ovToggle'), prevBtn=document.getElementById('ovPrev'),
+      nextBtn=document.getElementById('ovNext'), stopBtn=document.getElementById('ovStop');
+
+  var T={spec:null,steps:[],i:0,left:0,total:0,paused:false,done:false,id:null,last:0};
+
+  function fmt(s){ s=Math.max(0,Math.ceil(s)); var m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+
+  function build(spec){
+    var steps=[],r;
+    for(r=1;r<=spec.reps;r++){
+      if(spec.work>0) steps.push({phase:'work',rep:r,dur:spec.work});
+      if(spec.rest>0 && !(spec.work>0 && r===spec.reps)) steps.push({phase:'rest',rep:r,dur:spec.rest});
+    }
+    if(!steps.length) steps.push({phase:'rest',rep:1,dur:spec.rest||spec.work||60});
+    return steps;
+  }
+
+  function makeDots(){
+    dotsEl.innerHTML='';
+    var many = T.spec.reps>1;
+    dotsEl.hidden=!many; hintEl.hidden=!many;
+    if(!many) return;
+    for(var r=1;r<=T.spec.reps;r++){
+      var b=document.createElement('button');
+      b.type='button'; b.className='dot'; b.textContent=String(r);
+      b.setAttribute('data-rep',String(r));
+      b.setAttribute('aria-label','Ir a la serie '+r);
+      dotsEl.appendChild(b);
+    }
+  }
+
+  function paint(){
+    if(T.done){
+      clockEl.textContent='0:00'; clockEl.className='ov-clock';
+      phaseEl.textContent='Hecho'; phaseEl.className='ov-phase';
+      fillEl.style.width='100%';
+      return;
+    }
+    var st=T.steps[T.i];
+    clockEl.textContent=fmt(T.left);
+    clockEl.className='ov-clock '+st.phase+(T.paused?' paused':'');
+    phaseEl.textContent=(st.phase==='work'?'Trabajo':'Descanso')+(T.spec.reps>1?' · '+st.rep+' de '+T.spec.reps:'');
+    phaseEl.className='ov-phase '+st.phase;
+    barWrap.className='bar '+st.phase;
+    fillEl.style.width=(T.total>0?(100-(T.left/T.total*100)):100)+'%';
+    [].forEach.call(dotsEl.children,function(d){
+      var r=parseInt(d.getAttribute('data-rep'),10);
+      d.className='dot'+(r===st.rep?' now':(r<st.rep?' done':''));
+    });
+  }
+
+  function load(i,silent){
+    T.done=false;
+    T.i=Math.max(0,Math.min(T.steps.length-1,i));
+    var st=T.steps[T.i];
+    T.left=T.total=st.dur; T.last=Date.now();
+    if(!silent) beep(st.phase==='work'?880:520,.18);
+    paint();
+  }
+
+  function advance(){
+    if(T.i < T.steps.length-1){ load(T.i+1); return; }
+    finish();
+  }
+
+  function finish(){
+    T.done=true; T.left=0; T.total=0;
+    clearInterval(T.id); T.id=null;
+    beep(660,.14); setTimeout(function(){beep(660,.14);},190); setTimeout(function(){beep(880,.3);},380);
+    paint(); release();
+  }
+
+  function tick(){
+    if(T.paused||T.done) return;
+    var now=Date.now(), dt=(now-T.last)/1000; T.last=now;
+    var before=Math.ceil(T.left);
+    T.left-=dt;
+    var after=Math.ceil(T.left);
+    if(after!==before && after>0 && after<=3) beep(700,.08);
+    if(T.left<=0){ advance(); return; }
+    paint();
+  }
+
+  function run(){ clearInterval(T.id); T.last=Date.now(); T.id=setInterval(tick,100); }
+
+  function start(spec){
+    clearInterval(T.id);
+    T.spec=spec; T.steps=build(spec); T.paused=false; T.done=false;
+    ov.hidden=false; nameEl.textContent=spec.name; toggleBtn.textContent='Pausa';
+    makeDots(); load(0); hold(); run();
+  }
+
+  document.querySelectorAll('[data-timer]').forEach(function(b){
+    b.addEventListener('click',function(){
+      try{ start(JSON.parse(b.getAttribute('data-timer'))); }catch(e){}
+    });
+  });
+
+  dotsEl.addEventListener('click',function(e){
+    var d=e.target.closest('.dot'); if(!d||!T.spec) return;
+    var r=parseInt(d.getAttribute('data-rep'),10);
+    for(var i=0;i<T.steps.length;i++){ if(T.steps[i].rep===r){ load(i,true); break; } }
+    if(!T.id) run();
+  });
+
+  function setPaused(p){
+    T.paused=p; T.last=Date.now();
+    toggleBtn.textContent=p?'Seguir':'Pausa';
+    if(p) release(); else hold();
+    paint();
+  }
+  toggleBtn.addEventListener('click',function(){ if(!T.spec||T.done) return; setPaused(!T.paused); });
+  clockEl.addEventListener('click',function(){ if(!T.spec||T.done) return; setPaused(!T.paused); });
+  prevBtn.addEventListener('click',function(){ if(!T.spec) return; load(T.i-1,true); if(!T.id) run(); });
+  nextBtn.addEventListener('click',function(){ if(!T.spec) return; if(T.i<T.steps.length-1){ load(T.i+1,true); if(!T.id) run(); } else finish(); });
+  stopBtn.addEventListener('click',function(){
+    clearInterval(T.id); T.id=null; T.spec=null; T.done=false; ov.hidden=true; release();
+  });
+
+  document.addEventListener('keydown',function(e){
+    if(ov.hidden) return;
+    if(e.key==='Escape'){ stopBtn.click(); }
+    else if(e.key===' '){ e.preventDefault(); toggleBtn.click(); }
+    else if(e.key==='ArrowLeft'){ prevBtn.click(); }
+    else if(e.key==='ArrowRight'){ nextBtn.click(); }
+  });
+
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden && T.id && !T.paused){ T.last=Date.now(); hold(); }
+  });
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
