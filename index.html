@@ -1120,8 +1120,23 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
 </script>
 <script>
 if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+  /* Si ya habia un service worker controlando y lo releva uno nuevo, recarga una
+     vez sola para que no te quedes mirando la version anterior. En la primera
+     instalacion no habia controlador, asi que no recarga. */
+  var teniaControl = !!navigator.serviceWorker.controller, recargando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(!teniaControl || recargando) return;
+    recargando = true;
+    window.location.reload();
+  });
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      reg.update();
+      /* iOS no comprueba si hay version nueva mientras la app sigue abierta. */
+      document.addEventListener('visibilitychange', function(){
+        if(!document.hidden) reg.update();
+      });
+    }).catch(function(){});
   });
 }
 </script>
