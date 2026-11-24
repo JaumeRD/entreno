@@ -346,10 +346,24 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
 
       <div class="ex" data-prog="lockoff">
         <div class="ex-top"><h3>Lock off</h3><span class="step">G2</span></div>
-        <div class="specs"><span class="spec" data-prog-spec>2 × 20 s</span><span class="spec">3 ángulos de codo</span><span class="spec">3 min</span></div>
-        <p class="note">Isométrico de tracción: la posición en la que se bloquea un movimiento de bloque. Tres ángulos — 90°, medio y casi extendido — porque la fuerza isométrica es específica del ángulo. Progresión: dos brazos → dos brazos más tiempo → <b>un brazo asistido con goma</b>.</p>
+        <div class="specs"><span class="spec" data-prog-spec>1 × 1 · dos brazos</span><span class="spec">barra</span><span class="spec">5 min</span></div>
+        <p class="note">Isométrico de tracción: la posición en la que se bloquea un movimiento. La hoja lo progresa <b>dos brazos → dos brazos 40 s → un brazo asistido con goma</b>, siempre a una sola repetición por serie.</p>
+        <p class="note">Solo la semana 2 lleva duración escrita (40 s). En las demás la hoja pone una repetición sin tiempo, o sea <b>aguante máximo</b>: bajas cuando no puedes mantener la posición.</p>
         <p class="note crit" data-prog-note hidden></p>
-        <button class="go" data-prog-btn data-timer='{"name":"Lock off","reps":2,"work":20,"rest":180}'>Iniciar 2 × 20 s / 3 min</button>
+        <button class="go" data-prog-btn data-timer='{"name":"Lock off","reps":1,"work":0,"rest":300}'>Temporizar descanso · 5 min</button>
+      </div>
+
+      <div class="ex" data-prog="deadhang">
+        <div class="ex-top"><h3>Dead hang 3×3×3</h3><span class="step">G3</span></div>
+        <div class="specs"><span class="spec">33 mm</span><span class="spec" data-prog-spec>3 ángulos × 3 de 3 s</span><span class="spec">3 vueltas</span><span class="spec">3 s entre repes</span><span class="spec">1 min</span></div>
+        <p class="note"><b>Son tres ángulos de bloqueo, no tres series.</b> Cuelgas a brazo estirado, a 90° y bloqueado arriba: tres repeticiones de 3-4 s en cada ángulo, con 3 s entre repeticiones y 1 min entre ángulos. Eso es una vuelta, y van <b>tres vueltas</b>.</p>
+        <p class="note">Por eso va a 33 mm, que para ti es un canto cómodo: el que trabaja aquí no es el dedo, es el brazo en la posición. Es la versión en tabla del lock off, y por eso se relevan — el lock off en el bloque 1 y esto en el bloque 2.</p>
+        <p class="note crit" data-prog-note hidden></p>
+        <button class="go" data-prog-btn data-timer='{"name":"Dead hang · un ángulo","reps":3,"work":3,"rest":3}'>Iniciar un ángulo · 3 × 3 s</button>
+        <div class="quick">
+          <button data-timer='{"name":"Entre ángulos","reps":1,"work":0,"rest":60}'>1 min</button>
+          <button data-timer='{"name":"Entre vueltas","reps":1,"work":0,"rest":60}'>Siguiente vuelta</button>
+        </div>
       </div>
     </div>
   </section>
@@ -382,20 +396,24 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
     <div class="ex" data-prog="liso">
       <div class="ex-top"><h3>Isométrico de levantar · 10 s</h3><span class="step">3</span></div>
       <div class="specs">
-        <span class="spec" data-prog-edge>20 mm</span><span class="spec">half crimp</span>
-        <span class="spec" data-prog-spec>3 × 10 s</span>
-        <span class="spec load" data-ref="mean" data-lo=".75" data-hi=".80"></span>
+        <span class="spec" data-prog-edge>pinzas</span><span class="spec" data-prog-grip>pinza</span>
+        <span class="spec" data-prog-spec>2 × 2 de 10 s</span>
+        <span class="spec load" data-ref="mean" data-lo=".75" data-hi=".80" hidden></span>
         <span class="spec">3 min</span>
       </div>
-      <p class="note">El segundo peldaño de fuerza máxima, no resistencia: 10 s con menos carga que los 7-8 s del Día A. Es el ejercicio central del entrenador de referencia en los dos mesociclos (<b>Lift Isometric</b>), y lo hace <b>sobre aparato de levantar</b>, no colgado — con dinamómetro tienes cargas exactas y puedes trabajar una mano a la vez.</p>
-      <p class="note">Esto sustituye a las suspensiones largas de 20-30 s, que eran fuerza-resistencia y no estaban en tus objetivos. <b>La resistencia va en el muro</b>, no en la tabla: en las 8 semanas de la hoja de referencia no hay ni un repeater.</p>
+      <p class="note">El segundo peldaño de fuerza máxima, no resistencia: 10 s con menos carga que los 7-8 s del Día A. Es el ejercicio central de la hoja de referencia en los dos mesociclos (<b>Lift Isometric</b>), y va <b>sobre aparato de levantar</b>, no colgado — con dinamómetro tienes la carga exacta y trabajas una mano cada vez.</p>
+      <p class="note"><b>Bloque 1 en pinza, bloque 2 a 15 mm y por brazo</b>, como en la hoja. En pinza no hay porcentaje: tu pico de 20 mm en half crimp no vale como referencia para una pinza, son agarres distintos. O la mides aparte con el dinamómetro, o vas por sensación hasta tenerla medida.</p>
+      <p class="note">Esto sustituye a las suspensiones largas de 20-30 s, que eran fuerza-resistencia y no estaban en tus objetivos. <b>La resistencia va en el muro</b>, no en la tabla: en las 8 semanas de la hoja no hay ni un repeater.</p>
       <p class="note crit" data-prog-note hidden></p>
-      <button class="go" data-prog-btn data-timer='{"name":"Isométrico 10 s","reps":3,"work":10,"rest":180}'>Iniciar 3 × 10 s / 3 min</button>
+      <button class="go" data-prog-btn data-timer='{"name":"Isométrico 10 s","reps":2,"work":10,"rest":180}'>Iniciar serie · 2 × 10 s</button>
+      <div class="quick">
+        <button data-timer='{"name":"Entre series","reps":1,"work":0,"rest":180}'>3 min entre series</button>
+      </div>
     </div>
 
     <div class="ex" data-prog="campus">
       <div class="ex-top"><h3>Campus con pies</h3><span class="step">4</span></div>
-      <div class="specs"><span class="spec">20 mm</span><span class="spec" data-prog-spec>2 × 2 por brazo</span><span class="spec">pies apoyados</span><span class="spec">3 min</span></div>
+      <div class="specs"><span class="spec" data-prog-edge>20 mm</span><span class="spec" data-prog-spec>2 × 2 por brazo</span><span class="spec">pies apoyados</span><span class="spec">3 min</span></div>
       <ul class="tight">
         <li><b>Block for rock:</b> sueltas una mano y la devuelves a la misma presa sin perder la posición.</li>
         <li><b>Block and swing:</b> igual, dejando que el cuerpo oscile y frenándolo con los dedos.</li>
@@ -406,20 +424,8 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
       <button class="go" data-prog-btn data-timer='{"name":"Campus","reps":2,"work":0,"rest":180}'>Iniciar 2 series / 3 min</button>
     </div>
 
-    <div class="ex" data-prog="deadhang">
-      <div class="ex-top"><h3>Dead hang 3×3×3</h3><span class="step">5</span></div>
-      <div class="specs"><span class="spec">33 mm</span><span class="spec" data-prog-spec>3 × 3 repes de 3 s</span><span class="spec">3 s entre repes</span><span class="spec">1 min entre series</span></div>
-      <p class="note">Esto es tu idea: apretar al máximo 3 s, soltar, y otra vez. Existe, se llama así y está en la hoja del entrenador en las semanas 5 a 7 — tres series de tres repeticiones de 3-4 s por ángulo, con 3 s entre repeticiones. Es un <b>cluster set</b>: partir la serie con micro-descansos mantiene más fuerza por repetición.</p>
-      <p class="note">Y por eso no va en el Día A: los 3 s son <b>tasa de desarrollo de fuerza</b>, no fuerza máxima. Son cualidades distintas y van en sitios distintos. Canto grande a propósito, que la carga aquí es alta y rápida.</p>
-      <p class="note crit" data-prog-note hidden></p>
-      <button class="go" data-prog-btn data-timer='{"name":"Dead hang 3×3","reps":3,"work":3,"rest":3}'>Iniciar serie · 3 × 3 s</button>
-      <div class="quick">
-        <button data-timer='{"name":"Entre series","reps":1,"work":0,"rest":60}'>1 min</button>
-      </div>
-    </div>
-
     <div class="ex" data-prog="drills">
-      <div class="ex-top"><h3>Drills con restricción</h3><span class="step">6</span></div>
+      <div class="ex-top"><h3>Drills con restricción</h3><span class="step">5</span></div>
       <div class="specs"><span class="spec" data-prog-spec>2 bloques · Flash -4/-2</span><span class="spec">3 min</span></div>
       <ul class="tight">
         <li><b>Feet forward:</b> el bloque entero con los pies por delante de las manos siempre que se pueda.</li>
@@ -432,7 +438,7 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
     </div>
 
     <div class="ex" data-prog="feos">
-      <div class="ex-top"><h3>Bloques feos</h3><span class="step">7</span></div>
+      <div class="ex-top"><h3>Bloques feos</h3><span class="step">6</span></div>
       <div class="specs"><span class="spec" data-prog-spec>4 × 3 intentos</span><span class="spec">2 min</span><span class="spec">Flash -3 / Flash -2</span></div>
       <p class="note">Presas malas, posiciones incómodas, lo que no eliges. Comparte el presupuesto de 24 intentos duros con el bloque límite del Día A: cuando uno sube, el otro baja.</p>
       <p class="note crit" data-prog-note hidden></p>
@@ -440,7 +446,7 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
     </div>
 
     <div class="ex">
-      <div class="ex-top"><h3>Extensores y lumbricales</h3><span class="step">8</span></div>
+      <div class="ex-top"><h3>Extensores y lumbricales</h3><span class="step">7</span></div>
       <div class="specs"><span class="spec">3 min</span><span class="spec">goma</span><span class="spec">2 × 15</span></div>
       <p class="note">Abrir contra goma, y apertura entre dedos sin forzar. <b>Acto de fe declarado:</b> no hay ningún ensayo controlado que demuestre que el trabajo de antagonistas previene lesiones en escalada — es consenso de entrenadores y fisios. Y el entrenador de referencia no tiene ni un ejercicio de extensores en 8 semanas. Se queda porque cuesta 3 minutos, no porque esté demostrado.</p>
     </div>
@@ -692,23 +698,32 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
       timer:function(n){ return {name:'Arqueo',reps:n,work:5,rest:120}; } },
 
     /* Lift Isometric de la hoja de referencia: 10 s, segundo peldano de fuerza maxima. */
-    liso:{ v:[3,4,4,2, 4,4,5,2],
-      spec:function(n){ return n+' × 10 s'; },
-      label:function(n){ return 'Iniciar '+n+' × 10 s / 3 min'; },
+    /* Lift Isometric de la hoja: 2 series x N repeticiones de 10''.
+       Bloque 1 en pinzas, bloque 2 a 15 mm y por brazo. En pinza no hay
+       porcentaje: el pico de 20 mm en half crimp no sirve de referencia. */
+    liso:{ v:[2,3,3,2, 2,3,3,2], ser:2,
+      edge:function(i){ return i<4?'pinzas':'15 mm'; },
+      grip:function(i){ return i<4?'pinza':'half crimp · por brazo'; },
+      hideLoad:function(i){ return i<4; },
+      spec:function(n,i){ return '2 × '+n+' de 10 s'+(i<4?'':' por brazo'); },
+      label:function(n){ return 'Iniciar serie · '+n+' × 10 s'; },
       timer:function(n){ return {name:'Isométrico 10 s',reps:n,work:10,rest:180}; } },
 
     /* Bloque 1: Block for rock y Block and swing, series x repes por brazo.
        Bloque 2: Campus Move Step 1, 12 series de una sola repeticion. */
     campus:{ v:[2,2,3,2, 1,1,1,0], ser:[2,3,3,2, 12,12,12,0],
+      /* Campus Move Step 1 arranca a 45 mm y baja a 20 desde la semana 6. */
+      edge:function(i){ return i===4?'45 mm':'20 mm'; },
       spec:function(n,i){ return i<4 ? this.ser[i]+' × '+n+' por brazo' : '12 × 1 por brazo'; },
       label:function(n,i){ return 'Iniciar '+this.ser[i]+' series / 3 min'; },
       timer:function(n,i){ return {name:'Campus',reps:this.ser[i],work:0,rest:180}; } },
 
+    /* 3 angulos de bloqueo x 3 repeticiones x 3 vueltas. Releva al lock off. */
     deadhang:{ v:[0,0,0,0, 3,4,3,0],
-      offTxt:'Entra en el bloque 2, a partir de la semana 5.',
-      spec:function(n){ return '3 × 3 repes de '+n+' s'; },
-      label:function(n){ return 'Iniciar serie · 3 × '+n+' s'; },
-      timer:function(n){ return {name:'Dead hang 3×3',reps:3,work:n,rest:3}; } },
+      offTxt:'Bloque 2, semanas 5 a 7. Hasta entonces el bloqueo lo cubre el lock off.',
+      spec:function(n){ return '3 ángulos × 3 de '+n+' s'; },
+      label:function(n){ return 'Iniciar un ángulo · 3 × '+n+' s'; },
+      timer:function(n){ return {name:'Dead hang · un ángulo',reps:3,work:n,rest:3}; } },
 
     drills:{ v:[2,3,3,2, 3,3,3,2],
       spec:function(n){ return n+' bloques · Flash -4/-2'; },
@@ -738,10 +753,16 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
       label:function(n,i){ return 'Iniciar '+this.ser[i]+' × '+n+' / 3 min'; },
       timer:function(n,i){ return {name:'Dominadas lastradas',reps:this.ser[i],work:0,rest:180}; } },
 
-    lockoff:{ v:[20,25,30,20, 30,35,40,20], ser:[2,2,2,1, 2,2,3,1],
-      spec:function(n,i){ return this.ser[i]+' × '+n+' s'; },
-      label:function(n,i){ return 'Iniciar '+this.ser[i]+' × '+n+' s / 3 min'; },
-      timer:function(n,i){ return {name:'Lock off',reps:this.ser[i],work:n,rest:180}; } }
+    /* Tal cual la hoja: 1-2 series de UNA repeticion. Solo la semana 2 lleva
+       duracion (40 s); el resto es aguante maximo. Sale en el bloque 2, donde
+       lo releva el dead hang a 3 angulos. */
+    lockoff:{ v:[1,2,1,2, 0,0,0,0], dur:[0,40,0,0, 0,0,0,0],
+      modo:['dos brazos','dos brazos · 40 s','un brazo con goma','un brazo con goma'],
+      offTxt:'Bloque 2: el bloqueo pasa al dead hang a 3 ángulos.',
+      spec:function(n,i){ return n+' × 1 · '+this.modo[i]; },
+      label:function(n,i){ return this.dur[i]>0 ? 'Iniciar '+n+' × '+this.dur[i]+' s / 5 min'
+                                                : 'Temporizar descanso · 5 min'; },
+      timer:function(n,i){ return {name:'Lock off',reps:this.dur[i]>0?n:1,work:this.dur[i],rest:300}; } }
   };
 
   var WEEKS=[
@@ -795,6 +816,9 @@ td:first-child{font-family:var(--mono);font-size:13px;color:var(--muted);white-s
         nt.hidden = !(off||info.d);
       }
       if(off) return;
+      if(p.edge){ var ed=ex.querySelector('[data-prog-edge]'); if(ed) ed.textContent=p.edge(i); }
+      if(p.grip){ var gr=ex.querySelector('[data-prog-grip]'); if(gr) gr.textContent=p.grip(i); }
+      if(p.hideLoad){ var lc=ex.querySelector('.spec.load'); if(lc) lc.hidden=p.hideLoad(i); }
       if(sp) sp.textContent=p.spec(n,i);
       if(bt){ bt.textContent=p.label(n,i); bt.setAttribute('data-timer',JSON.stringify(p.timer(n,i))); }
       if(ld&&p.load){ var r=p.load(i); ld.setAttribute('data-lo',String(r[0])); ld.setAttribute('data-hi',String(r[1])); }
