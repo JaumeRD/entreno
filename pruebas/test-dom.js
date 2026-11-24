@@ -43,6 +43,8 @@ is('Abrahangs fuera', /Abrahangs/.test(d.body.textContent), false);
 console.log('\n== semana 1: volumen de entrada ==');
 is('fuerza máxima', spec('fmax'), '4 × 7-8 s');
 is('arqueo', spec('arqueo'), '3 × 5 s');
+is('recruitment pull', spec('recruit'), '2 × 2 de 5 s por brazo');
+is('recruitment sin porcentaje', card('recruit').querySelector('.spec.load'), null);
 is('isométrico: 2 series por N repes', spec('liso'), '2 × 2 de 10 s');
 is('bloque 1 del isométrico en pinza', card('liso').querySelector('[data-prog-edge]').textContent.trim(), 'pinzas');
 is('posición de pinza', card('liso').querySelector('[data-prog-grip]').textContent.trim(), 'pinza');
@@ -69,6 +71,7 @@ is('timer de fuerza máxima', btn('fmax').getAttribute('data-timer'), '{"name":"
 
 console.log('\n== semana 3: la más dura del bloque ==');
 clickWeek(3);
+is('recruitment sube repes', spec('recruit'), '2 × 4 de 5 s por brazo');
 is('lock off a un brazo', spec('lockoff'), '1 × 1 · un brazo con goma');
 is('límite sube', spec('limite'), 'techo 15 intentos');
 is('feos bajan', spec('feos'), '3 × 3 intentos');
@@ -93,6 +96,8 @@ is('dead hang entra', off('deadhang'), false);
 is('dead hang son 3 ángulos', spec('deadhang'), '3 ángulos × 3 de 3 s');
 is('timer de un ángulo', btn('deadhang').getAttribute('data-timer'), '{"name":"Dead hang · un ángulo","reps":3,"work":3,"rest":3}');
 is('el lock off se retira', off('lockoff'), true);
+is('el recruitment se retira', off('recruit'), true);
+is('aviso del recruitment', note('recruit').textContent.trim(), 'Bloque 1 solamente. En el bloque 2 el reclutamiento lo lleva el Campus Move.');
 is('aviso del lock off', note('lockoff').textContent.trim(), 'Bloque 2: el bloqueo pasa al dead hang a 3 ángulos.');
 is('isométrico pasa a 15 mm', card('liso').querySelector('[data-prog-edge]').textContent.trim(), '15 mm');
 is('y a un brazo', card('liso').querySelector('[data-prog-grip]').textContent.trim(), 'half crimp · por brazo');
@@ -159,11 +164,11 @@ gymA.click();
 is('se apaga otra vez', count('tab-a'), '0 de 6');
 
 console.log('\n== la cuenta ignora lo que está fuera esta semana ==');
-is('Día B al completo', count('tab-b'), '0 de 7');
+is('Día B al completo', count('tab-b'), '0 de 8');
 clickWeek(4);
-is('Día B en descarga, sin feos', count('tab-b'), '0 de 6');
+is('Día B en descarga, sin feos', count('tab-b'), '0 de 7');
 clickWeek(5);
-is('Día B en el bloque 2', count('tab-b'), '0 de 7');
+is('Día B en el bloque 2, sin recruitment', count('tab-b'), '0 de 7');
 is('Día C con el circuito dentro', count('tab-c'), '0 de 3');
 clickWeek(1);
 is('Día C sin el circuito', count('tab-c'), '0 de 2');
@@ -236,6 +241,7 @@ is('semáforo en Semana', /Semáforo/.test(d.getElementById('tab-w').textContent
 is('calendario de 3 sesiones', /48 h entre A y B/.test(d.getElementById('tab-w').textContent), true);
 is('regla del gym al final', /El gimnasio va al final de la sesión/.test(d.getElementById('tab-w').textContent), true);
 is('regla de la resistencia en el muro', /La resistencia va en el muro/.test(d.getElementById('tab-w').textContent), true);
+is('regla del máximo por agarre', /Un solo ejercicio al máximo por sesión y por agarre/.test(d.getElementById('tab-w').textContent), true);
 
 console.log('\n' + (fails === 0 ? 'TODO OK' : fails + ' FALLOS'));
 window.close();

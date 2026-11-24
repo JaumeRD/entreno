@@ -1,7 +1,7 @@
 # Pruebas
 
 Comprobación headless de `index.html` con jsdom: carga el HTML, ejecuta el script de
-verdad y afirma sobre el DOM resultante. **133 comprobaciones.**
+verdad y afirma sobre el DOM resultante. **139 comprobaciones.**
 
 ## Cómo se pasan
 

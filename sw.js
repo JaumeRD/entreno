@@ -1,7 +1,7 @@
 /* Entreno — service worker.
    Guarda la app en el móvil para que funcione sin cobertura.
    Si cambias los archivos, sube el número de CACHE. */
-var CACHE = 'entreno-v4';
+var CACHE = 'entreno-v5';
 var CORE = [
   './',
   './index.html',
