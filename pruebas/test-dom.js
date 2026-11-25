@@ -253,6 +253,13 @@ console.log('\n== rutina de entrada en los tres días ==');
 ['a', 'b', 'c'].forEach(function (t) {
   is('arco de dedos en el día ' + t.toUpperCase(), /Arco de dedos con goma/.test(d.getElementById('tab-' + t).textContent), true);
 });
+['a', 'b'].forEach(function (t) {
+  var T = t.toUpperCase();
+  var ex = d.getElementById('tab-' + t).querySelectorAll('.ex');
+  is('día ' + T + ': primero se calienta', ex[0].querySelector('h3').textContent, 'Calentamiento y medición');
+  is('día ' + T + ': la rutina de entrada va después', ex[1].querySelector('h3').textContent, 'Rutina de entrada');
+  is('día ' + T + ': los pasos numerados 1 y 2', ex[0].querySelector('.step').textContent + ex[1].querySelector('.step').textContent, '12');
+});
 
 console.log('\n== persistencia ==');
 is('semana guardada', window.localStorage.getItem('wk'), '1');

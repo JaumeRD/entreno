@@ -1,7 +1,7 @@
 # Pruebas
 
 Comprobación headless de `index.html` con jsdom: carga el HTML, ejecuta el script de
-verdad y afirma sobre el DOM resultante. **167 comprobaciones.**
+verdad y afirma sobre el DOM resultante. **176 comprobaciones.**
 
 ## Cómo se pasan
 
@@ -24,6 +24,8 @@ Sale `TODO OK` y código 0, o la lista de fallos con lo esperado y lo obtenido.
 
 - **Arranque**: 4 pestañas, 8 semanas, 4 fases, que ya no existen Gym 1, Gym 2 ni Diario,
   y que los Abrahangs no aparecen en ningún sitio.
+- **Apertura de la sesión**: en los Días A y B se calienta primero y la rutina de entrada
+  va después, numeradas en ese orden.
 - **Volumen por semana** de los 15 ejercicios con progresión: fuerza máxima, arqueo,
   recruitment pull, lift pull, isométrico de 10 s, block and hold, block and swing,
   secuencias de campus, dead hang, feet forward, freeze it, tres veces seguidas, bloque
